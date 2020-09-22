@@ -66,7 +66,7 @@ services:
  zabbix-web-nginx-pgsql:
   image: zabbix/zabbix-web-nginx-pgsql:ubuntu-4.4-latest
   ports:
-   - "8081:8080"
+   - "8080:8080"
    - "8443:8443"
   links:
    - postgres-server:postgres-server

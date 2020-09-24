@@ -5,8 +5,8 @@ After=docker.service
 
 [Service]
 WorkingDirectory=/home/ubuntu/zabbix-docker
-ExecStart=docker-compose -f ./docker-compose_v3_ubuntu_pgsql_latest_trescloud.yaml up
-ExecStop=docker-compose -f ./docker-compose_v3_ubuntu_pgsql_latest_trescloud.yaml down
+ExecStart=/usr/local/bin/docker-compose -f ./docker-compose_v3_ubuntu_pgsql_latest_trescloud.yaml up
+ExecStop=/usr/local/bin/docker-compose -f ./docker-compose_v3_ubuntu_pgsql_latest_trescloud.yaml down
 TimeoutStartSec=0
 Restart=on-failure
 StartLimitIntervalSec=60

@@ -27,9 +27,9 @@ services:
     hard: 40000
   deploy:
    resources:
-    limits:
-      cpus: '0.70'
-      memory: 1G
+#    limits:
+#      cpus: '0.70'
+#      memory: 1G
     reservations:
       cpus: '0.5'
       memory: 512M

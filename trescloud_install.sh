@@ -8,7 +8,9 @@
 # adecuadamente
 
 # construyo la imagen de TRESCLOUD con curl incluido
+cd TRESCLOUD
 docker build -t zabbix-server-pgsql:ubuntu-5.0-latest-trescloud .
+cd ..
 
 # copio el servicio
 sudo cp docker-compose-zabbix.service /etc/systemd/system/

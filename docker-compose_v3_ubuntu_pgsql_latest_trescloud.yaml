@@ -54,11 +54,12 @@ services:
 #  devices:
 #   - "/dev/ttyUSB0:/dev/ttyUSB0"
   stop_grace_period: 30s
-  sysctls:
-   - net.ipv4.ip_local_port_range=1024 65000
-   - net.ipv4.conf.all.accept_redirects=0
-   - net.ipv4.conf.all.secure_redirects=0
-   - net.ipv4.conf.all.send_redirects=0
+# Comentando esta seccion se logra usar monitoreo activo desde docker produccion
+#  sysctls:
+#   - net.ipv4.ip_local_port_range=1024 65000
+#   - net.ipv4.conf.all.accept_redirects=0
+#   - net.ipv4.conf.all.secure_redirects=0
+#   - net.ipv4.conf.all.send_redirects=0
   labels:
    com.zabbix.description: "Zabbix server with PostgreSQL database support"
    com.zabbix.company: "Zabbix LLC"

@@ -2,6 +2,8 @@ version: '3.5'
 services:
  zabbix-server:
   image: zabbix-server-pgsql:ubuntu-5.2-latest-trescloud
+  environment: 
+    ZBX_CACHESIZE=64M
   logging:
     driver: syslog
     options:

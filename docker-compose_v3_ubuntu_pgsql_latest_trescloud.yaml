@@ -244,9 +244,9 @@ services:
 #   - ./.ZBX_DB_KEY_FILE:/run/secrets/client-key.pem:ro
   deploy:
    resources:
-    limits:
-      cpus: '0.70'
-      memory: 512M
+#    limits:
+#      cpus: '0.70'
+#      memory: 512M
     reservations:
       cpus: '0.5'
       memory: 256M
@@ -297,9 +297,9 @@ services:
    - zabbix-server:zabbix-server
   deploy:
    resources:
-    limits:
-      cpus: '0.2'
-      memory: 128M
+#    limits:
+#      cpus: '0.2'
+#      memory: 128M
     reservations:
       cpus: '0.1'
       memory: 64M
@@ -327,9 +327,9 @@ services:
    - "10052:10052"
   deploy:
    resources:
-    limits:
-      cpus: '0.5'
-      memory: 512M
+#    limits:
+#      cpus: '0.5'
+#      memory: 512M
     reservations:
       cpus: '0.25'
       memory: 256M
@@ -355,9 +355,9 @@ services:
    - snmptraps:/var/lib/zabbix/snmptraps:rw
   deploy:
    resources:
-    limits:
-      cpus: '0.5'
-      memory: 256M
+#    limits:
+#      cpus: '0.5'
+#      memory: 256M
     reservations:
       cpus: '0.25'
       memory: 128M

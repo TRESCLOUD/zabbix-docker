@@ -4,7 +4,7 @@ services:
   image: zabbix-server-pgsql:ubuntu-5.2-latest-trescloud
   environment: 
     - ZBX_CACHESIZE=64M
-    - ZBX_STARTPOLLERS=10
+    - ZBX_STARTPOLLERS=7
   logging:
     driver: syslog
     options:

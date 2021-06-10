@@ -249,6 +249,8 @@ services:
    - ./zbx_env/etc/ssl/nginx:/etc/ssl/nginx:ro
    - ./zbx_env/usr/share/zabbix/modules/:/usr/share/zabbix/modules/:ro
    - ./zbx_env/etc/zabbix/web/certs:/etc/zabbix/web/certs:ro
+   # Este archivo esta modificado para permitir SSO usadno SAML con proxy reverso
+   - ./zbx_env/usr/share/zabbix/vendor/php-saml/src/Saml2/Utils.php:/usr/share/zabbix/vendor/php-saml/src/Saml2/Utils.php:ro
 #   - ./.ZBX_DB_CA_FILE:/run/secrets/root-ca.pem:ro
 #   - ./.ZBX_DB_CERT_FILE:/run/secrets/client-cert.pem:ro
 #   - ./.ZBX_DB_KEY_FILE:/run/secrets/client-key.pem:ro

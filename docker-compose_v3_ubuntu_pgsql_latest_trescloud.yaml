@@ -5,6 +5,8 @@ services:
   environment: 
     - ZBX_CACHESIZE=64M
     - ZBX_STARTPOLLERS=7
+    # Cambiamos el timeout a 10 para lograr conexion a los servidores OD que demoran su entrega de los datos
+    - ZBX_TIMEOUT=10
   logging:
     driver: syslog
     options:

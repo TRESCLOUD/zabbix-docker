@@ -11,7 +11,7 @@ services:
     # Cambiamos el numero de pollers de servidores inalcanzables por defecto es 1
     - ZBX_STARTPOLLERSUNREACHABLE=10
     # Cambiamos el numero de pollers para http, por defecto es 1
-    - ZBX_STARTHTTPPOLLERS=30
+    - ZBX_STARTHTTPPOLLERS=60
   logging:
     driver: syslog
     options:

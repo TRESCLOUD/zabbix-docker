@@ -7,6 +7,8 @@ services:
     - ZBX_STARTPOLLERS=7
     # Cambiamos el timeout a 10 para lograr conexion a los servidores OD que demoran su entrega de los datos
     - ZBX_TIMEOUT=10
+    # Cambiamos el numero de pollers de servidores inalcanzables por defecto es 1
+    - ZBX_STARTPOLLERSUNREACHABLE=7
   logging:
     driver: syslog
     options:

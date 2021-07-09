@@ -264,7 +264,7 @@ services:
   deploy:
    resources:
     limits:
-      cpus: '0.70'
+      #cpus: '0.70'
       memory: 512M
     reservations:
       cpus: '0.5'
@@ -317,7 +317,7 @@ services:
   deploy:
    resources:
     limits:
-      cpus: '0.2'
+      #cpus: '0.2'
       memory: 128M
     reservations:
       cpus: '0.1'
@@ -347,7 +347,7 @@ services:
   deploy:
    resources:
     limits:
-      cpus: '0.5'
+      #cpus: '0.5'
       memory: 512M
     reservations:
       cpus: '0.25'
@@ -375,7 +375,7 @@ services:
   deploy:
    resources:
     limits:
-      cpus: '0.5'
+      #cpus: '0.5'
       memory: 256M
     reservations:
       cpus: '0.25'
@@ -418,6 +418,15 @@ services:
  postgres-server:
   image: postgres:latest
 #  command: -c ssl=on -c ssl_cert_file=/run/secrets/server-cert.pem -c ssl_key_file=/run/secrets/server-key.pem -c ssl_ca_file=/run/secrets/root-ca.pem
+  # Parametros obtenidos de PG TUNE:
+  # DB Version: 12
+  # OS Type: linux
+  # DB Type: mixed
+  # Total Memory (RAM): 7 GB
+  # CPUs num: 2
+  # Connections num: 200
+  # Data Storage: ssd
+  command: -c max_connections=200 -c shared_buffers=1792MB -c effective_cache_size=5376MB -c maintenance_work_mem=448MB -c checkpoint_completion_target=0.9 -c wal_buffers=16MB -c default_statistics_target=100 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c work_mem=4587kB -c min_wal_size=1GB -c max_wal_size=4GB -c max_worker_processes=2 -c max_parallel_workers_per_gather=1 -c max_parallel_workers=2 -c max_parallel_maintenance_workers=1
   volumes:
    - ./zbx_env/var/lib/postgresql/data:/var/lib/postgresql/data:rw
    - ./.ZBX_DB_CA_FILE:/run/secrets/root-ca.pem:ro

@@ -36,14 +36,14 @@ container_user = 'postgres'
 
 #limites de eliminacion maximo por interaccion
 #limit_trends_uint = 10000
-limit_history_str = 10000
-limit_history_text = 100000
-limit_history = 300000
-limit_history_uint = 500000
+limit_history_str = 1000
+limit_history_text = 10000
+limit_history = 30000
+limit_history_uint = 50000
 
 # Tiempo de espera entre eliminaciones
 # esta en segundos
-sleep_time = 1
+sleep_time = 30
 
 #####################################################################################
 # Funciones

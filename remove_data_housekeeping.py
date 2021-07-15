@@ -109,10 +109,14 @@ def container_exec_run(user, name, command):
 
 ####################################################################################
 
+syslog.syslog(syslog.LOG_INFO, "Inicio script de eliminacion")
 # adquiero el bloqueo sobre el archivo
 # si no lo logra sale con error
-lock_fd = acquireLock()
-
+try:
+    lock_fd = acquireLock()
+except:
+    syslog.syslog(syslog.LOG_ERR, "Finalizado script por que ya esta en ejecucion otra copia")
+    exit(1)
 # obtengo el total de datos que necesitamos eliminar y a partir de aqui 
 # se controlara la eliminacion de todos
 
@@ -200,6 +204,7 @@ while (history_str or history_text or history_uint) and max_concurrent_delete > 
     # numero de ejecuciones del lazo
     executions += 1
 
+syslog.syslog(syslog.LOG_INFO, "Finalizado script de eliminacion")
 # libero el bloqueo del archivo para una
 # futura ejecucion
 releaseLock(lock_fd)

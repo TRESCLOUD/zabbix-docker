@@ -10,7 +10,7 @@
 # instalo librerias del sistema operativo y python requeridas
 # por los scripts complemetarios
 
-sudo apt install python3-pip
+sudo apt install python3-pip -y
 pip3 install docker
 
 # construyo la imagen de TRESCLOUD con curl incluido

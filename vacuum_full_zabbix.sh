@@ -14,7 +14,7 @@ VACUUM_LOG="${HOME}/vacuum-full-zabbix.log"
 # accedemos al contenedor de postgres y desde dentro ejecutamos el vacuum
 echo "Ejecucion actual: "`date`" ------------------------------------------" >> $VACUUM_LOG
 echo "Ejecucion actual: "`date`" ------------------------------------------"
-docker exec -u postgres zabbix-docker_postgres-server_1 psql -U zabbix -c "VACUUM FULL ANALYZE VERBOSE;" >> $VACUUM_LOG
+docker exec -u postgres zabbix-docker_postgres-server_1 psql -U zabbix -c "VACUUM FULL VERBOSE ANALYZE;" >> $VACUUM_LOG
 echo "Tarea Finalizada." `date` >> $VACUUM_LOG
 echo "" >> $VACUUM_LOG
 echo "Tarea Finalizada." `date`

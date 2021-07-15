@@ -43,7 +43,7 @@ limit_history_uint = 50000
 
 # Tiempo de espera entre eliminaciones
 # esta en segundos
-sleep_time = 30
+sleep_time = 10
 
 #####################################################################################
 # Funciones
@@ -112,71 +112,73 @@ lock_fd = acquireLock()
 #echo "eliminacion trends_uint"
 #docker exec -u postgres zabbix-docker_postgres-server_1 psql -U zabbix -c "DELETE FROM trends_uint t WHERE ctid IN ( SELECT t.ctid FROM trends_uint t LEFT JOIN items i ON i.itemid = t.itemid WHERE to_timestamp(t.clock) < (current_date - ((i.trends)::interval)) LIMIT $limit_trends_uint);"
 
-### history_str
-command = 'psql -U zabbix -c "SELECT count(*) FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
-status, total_history_str = container_exec_run(container_user, container, command)
-if status != 0:
-    exit(1)
-# b' count  \n--------\n 120412\n(1 row)\n\n'
-total_history_str = int(total_history_str.split()[2])
-print("total_history_str: %s" % total_history_str)
+# ### history_str
+# command = 'psql -U zabbix -c "SELECT count(*) FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
+# status, total_history_str = container_exec_run(container_user, container, command)
+# if status != 0:
+#     exit(1)
+# # b' count  \n--------\n 120412\n(1 row)\n\n'
+# total_history_str = int(total_history_str.split()[2])
+# print("total_history_str: %s" % total_history_str)
 
-### history_text
-command = 'psql -U zabbix -c "SELECT count(*) FROM history_text h WHERE ctid IN ( SELECT h.ctid FROM history_text h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
-status, total_history_text = container_exec_run(container_user, container, command)
-if status != 0:
-    exit(1)
-# b' count  \n--------\n 120412\n(1 row)\n\n'
-total_history_text = int(total_history_text.split()[2])
-print("total_history_text: %s" % total_history_text)
+# ### history_text
+# command = 'psql -U zabbix -c "SELECT count(*) FROM history_text h WHERE ctid IN ( SELECT h.ctid FROM history_text h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
+# status, total_history_text = container_exec_run(container_user, container, command)
+# if status != 0:
+#     exit(1)
+# # b' count  \n--------\n 120412\n(1 row)\n\n'
+# total_history_text = int(total_history_text.split()[2])
+# print("total_history_text: %s" % total_history_text)
 
-### history_uint
-command = 'psql -U zabbix -c "SELECT count(*) FROM history_uint h WHERE ctid IN ( SELECT h.ctid FROM history_uint h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
-status, total_history_uint = container_exec_run(container_user, container, command)
-if status != 0:
-    exit(1)
-# b' count  \n--------\n 120412\n(1 row)\n\n'
-total_history_uint = int(total_history_uint.split()[2])
-print("total_history_uint: %s" % total_history_uint)
+# ### history_uint
+# command = 'psql -U zabbix -c "SELECT count(*) FROM history_uint h WHERE ctid IN ( SELECT h.ctid FROM history_uint h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
+# status, total_history_uint = container_exec_run(container_user, container, command)
+# if status != 0:
+#     exit(1)
+# # b' count  \n--------\n 120412\n(1 row)\n\n'
+# total_history_uint = int(total_history_uint.split()[2])
+# print("total_history_uint: %s" % total_history_uint)
 
-while total_history_str > 0 or total_history_text > 0 or total_history_uint > 0:
-    if total_history_str > 0:
-        if total_history_str > limit_history_str:
-            command = 'psql -U zabbix -c "DELETE FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_str
-            total_history_str -= limit_history_str
-        else:
-            command = 'psql -U zabbix -c "DELETE FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
-            total_history_str = 0
+# se cuenta la cantidad de items eliminados
+total_history_str = total_history_text = total_history_uint = 0
+# se indica cuando ya no hayan items que borrar, se inicia directamente la eliminacion pero se marca con False si se detecta que no se eliminaron registros
+history_str = history_text = history_uint = True
+
+while history_str or history_text or history_uint:
+    if history_str:
+        command = 'psql -U zabbix -c "DELETE FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_str
         status, result = container_exec_run(container_user, container, command)
         if status != 0:
             exit(1)
-        print("total_history_str: %s" % total_history_str)
+        last_value = int(result.split()[1])
+        total_history_str += last_value
+        if last_value == 0:
+            history_str = False
+        print("history_str: %s, total_history_str: %s" % (history_str, total_history_str))
         time.sleep(sleep_time)
 
-    if total_history_text > 0:
-        if total_history_text > limit_history_text:
-            command = 'psql -U zabbix -c "DELETE FROM history_text h WHERE ctid IN ( SELECT h.ctid FROM history_text h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_text
-            total_history_text -= limit_history_text
-        else:
-            command = 'psql -U zabbix -c "DELETE FROM history_text h WHERE ctid IN ( SELECT h.ctid FROM history_text h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
-            total_history_text = 0
+    if history_text:
+        command = 'psql -U zabbix -c "DELETE FROM history_text h WHERE ctid IN ( SELECT h.ctid FROM history_text h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_text
         status, result = container_exec_run(container_user, container, command)
         if status != 0:
             exit(1)
-        print("total_history_text: %s" % total_history_text)
+        last_value = int(result.split()[1])
+        total_history_text += last_value
+        if last_value == 0:
+            history_text = False
+        print("history_text: %s, total_history_text: %s" % (history_text, total_history_text))
         time.sleep(sleep_time)
 
-    if total_history_uint > 0:
-        if total_history_uint > limit_history_uint:
-            command = 'psql -U zabbix -c "DELETE FROM history_uint h WHERE ctid IN ( SELECT h.ctid FROM history_uint h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_uint
-            total_history_uint -= limit_history_uint
-        else:
-            command = 'psql -U zabbix -c "DELETE FROM history_uint h WHERE ctid IN ( SELECT h.ctid FROM history_uint h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)));"'
-            total_history_uint = 0
+    if history_uint:
+        command = 'psql -U zabbix -c "DELETE FROM history_uint h WHERE ctid IN ( SELECT h.ctid FROM history_uint h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_uint
         status, result = container_exec_run(container_user, container, command)
         if status != 0:
             exit(1)
-        print("total_history_uint: %s" % total_history_uint)
+        last_value = int(result.split()[1])
+        total_history_uint += last_value
+        if last_value == 0:
+            history_uint = False
+        print("history_uint: %s, total_history_uint: %s" % (history_uint, total_history_uint))
         time.sleep(sleep_time)
 
 # libero el bloqueo del archivo para una

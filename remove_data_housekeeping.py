@@ -45,6 +45,12 @@ limit_history_uint = 50000
 # esta en segundos
 sleep_time = 10
 
+# maximo numero de repeticiones
+# debido a que Postgres bloquea las tablas es necesario
+# limitar el numero de eliminaciones 
+# en las pruebas se bloquea en la ejecucion 47
+max_concurrent_delete = 30
+
 #####################################################################################
 # Funciones
 def acquireLock():
@@ -143,8 +149,10 @@ lock_fd = acquireLock()
 total_history_str = total_history_text = total_history_uint = 0
 # se indica cuando ya no hayan items que borrar, se inicia directamente la eliminacion pero se marca con False si se detecta que no se eliminaron registros
 history_str = history_text = history_uint = True
+# numero de ejecuciones realizadas
+executions = 0
 
-while history_str or history_text or history_uint:
+while (history_str or history_text or history_uint) and max_concurrent_delete > executions:
     if history_str:
         command = 'psql -U zabbix -c "DELETE FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_str
         status, result = container_exec_run(container_user, container, command)
@@ -180,6 +188,8 @@ while history_str or history_text or history_uint:
             history_uint = False
         print("history_uint: %s, total_history_uint: %s" % (history_uint, total_history_uint))
         time.sleep(sleep_time)
+    # numero de ejecuciones del lazo
+    executions += 1
 
 # libero el bloqueo del archivo para una
 # futura ejecucion

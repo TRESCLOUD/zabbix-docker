@@ -26,8 +26,11 @@
 import fcntl
 import docker
 import time
+import syslog
 #import os
 
+#syslog.syslog(syslog.LOG_ERR, "Version de python no soportada: " + platform.python_version())
+#syslog.syslog(syslog.LOG_INFO, message)
 
 # Variables generales
 lock_file = '/tmp/.remove_data_housekeeping_lockfile.LOCK'
@@ -157,36 +160,42 @@ while (history_str or history_text or history_uint) and max_concurrent_delete > 
         command = 'psql -U zabbix -c "DELETE FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_str
         status, result = container_exec_run(container_user, container, command)
         if status != 0:
+            syslog.syslog(syslog.LOG_ERR, "Error al ejecutar consulta a postgres en history_str:\n%s" % result)
             exit(1)
         last_value = int(result.split()[1])
         total_history_str += last_value
         if last_value == 0:
             history_str = False
-        print("history_str: %s, total_history_str: %s" % (history_str, total_history_str))
+        message = "history_str: %s, total_history_str: %s" % (history_str, total_history_str)
+        syslog.syslog(syslog.LOG_INFO, message)
         time.sleep(sleep_time)
 
     if history_text:
         command = 'psql -U zabbix -c "DELETE FROM history_text h WHERE ctid IN ( SELECT h.ctid FROM history_text h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_text
         status, result = container_exec_run(container_user, container, command)
         if status != 0:
+            syslog.syslog(syslog.LOG_ERR, "Error al ejecutar consulta a postgres en history_text:\n%s" % result)
             exit(1)
         last_value = int(result.split()[1])
         total_history_text += last_value
         if last_value == 0:
             history_text = False
-        print("history_text: %s, total_history_text: %s" % (history_text, total_history_text))
+        message = "history_text: %s, total_history_text: %s" % (history_text, total_history_text)
+        syslog.syslog(syslog.LOG_INFO, message)
         time.sleep(sleep_time)
 
     if history_uint:
         command = 'psql -U zabbix -c "DELETE FROM history_uint h WHERE ctid IN ( SELECT h.ctid FROM history_uint h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_uint
         status, result = container_exec_run(container_user, container, command)
         if status != 0:
+            syslog.syslog(syslog.LOG_ERR, "Error al ejecutar consulta a postgres en history_uint:\n%s" % result)
             exit(1)
         last_value = int(result.split()[1])
         total_history_uint += last_value
         if last_value == 0:
             history_uint = False
-        print("history_uint: %s, total_history_uint: %s" % (history_uint, total_history_uint))
+        message = "history_uint: %s, total_history_uint: %s" % (history_uint, total_history_uint)
+        syslog.syslog(syslog.LOG_INFO, message)
         time.sleep(sleep_time)
     # numero de ejecuciones del lazo
     executions += 1

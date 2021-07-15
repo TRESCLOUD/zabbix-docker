@@ -1,5 +1,5 @@
 # m h  dom mon dow   command
-# eliminacion de datos cada hora
-  0 *   *   *   *    time python3 $HOME/zabbix-docker/remove_data_housekeeping.py
+# eliminacion de datos cada 20 minutos
+ */20 * *   *   *    time python3 $HOME/zabbix-docker/remove_data_housekeeping.py
 # vacuum full cada noche a las 23h00
   0 23  *   *   *    time bash $HOME/zabbix-docker/vacuum_full_zabbix.sh

@@ -35,10 +35,10 @@ container = 'zabbix-docker_postgres-server_1'
 container_user = 'postgres'
 
 #limites de eliminacion maximo por interaccion
-#limit_trends_uint = 500000
-limit_history_str = 500000
-limit_history_text = 500000
-limit_history = 500000
+#limit_trends_uint = 10000
+limit_history_str = 10000
+limit_history_text = 100000
+limit_history = 300000
 limit_history_uint = 500000
 
 # Tiempo de espera entre eliminaciones

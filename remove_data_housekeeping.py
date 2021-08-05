@@ -39,9 +39,9 @@ container_user = 'postgres'
 
 #limites de eliminacion maximo por interaccion
 #limit_trends_uint = 10000
+limit_history = 30000
 limit_history_str = 1000
 limit_history_text = 10000
-limit_history = 30000
 limit_history_uint = 50000
 
 # Tiempo de espera entre eliminaciones
@@ -153,13 +153,27 @@ except:
 # print("total_history_uint: %s" % total_history_uint)
 
 # se cuenta la cantidad de items eliminados
-total_history_str = total_history_text = total_history_uint = 0
+total_history = total_history_str = total_history_text = total_history_uint = 0
 # se indica cuando ya no hayan items que borrar, se inicia directamente la eliminacion pero se marca con False si se detecta que no se eliminaron registros
-history_str = history_text = history_uint = True
+history = history_str = history_text = history_uint = True
 # numero de ejecuciones realizadas
 executions = 0
 
-while (history_str or history_text or history_uint) and max_concurrent_delete > executions:
+while (history or history_str or history_text or history_uint) and max_concurrent_delete > executions:
+    if history:
+        command = 'psql -U zabbix -c "DELETE FROM history h WHERE ctid IN ( SELECT h.ctid FROM history h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history
+        status, result = container_exec_run(container_user, container, command)
+        if status != 0:
+            syslog.syslog(syslog.LOG_ERR, "Error al ejecutar consulta a postgres en history:\n%s" % result)
+            exit(1)
+        last_value = int(result.split()[1])
+        total_history += last_value
+        if last_value == 0:
+            history = False
+        message = "history: %s, total_history: %s" % (history, total_history)
+        syslog.syslog(syslog.LOG_INFO, message)
+        time.sleep(sleep_time)
+
     if history_str:
         command = 'psql -U zabbix -c "DELETE FROM history_str h WHERE ctid IN ( SELECT h.ctid FROM history_str h LEFT JOIN items i ON i.itemid = h.itemid WHERE to_timestamp(h.clock) < (current_date - ((i.history)::interval)) LIMIT %s);"' % limit_history_str
         status, result = container_exec_run(container_user, container, command)

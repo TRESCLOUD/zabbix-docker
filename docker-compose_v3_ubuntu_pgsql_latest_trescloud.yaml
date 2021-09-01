@@ -101,6 +101,8 @@ services:
 #   - ./.ZBX_DB_CA_FILE:/run/secrets/root-ca.pem:ro
 #   - ./.ZBX_DB_CERT_FILE:/run/secrets/client-cert.pem:ro
 #   - ./.ZBX_DB_KEY_FILE:/run/secrets/client-key.pem:ro
+   # Se agrega el archivo de configuracion de NGINX para permtir timeouts mas extensos
+   - ./zbx_env/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
   deploy:
    resources:
     limits:

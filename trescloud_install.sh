@@ -56,10 +56,10 @@ else
 			echo "Distribucion de Linux no soportada"
 			exit 1
 		else
-			sudo su -c "echo 'deb [arch=$arch_system] https://download.docker.com/linux/debian $(lsb_release -cs) stable' > $repo/docker.list"
+			sudo su -c "echo 'deb [arch=$arch_system] https://download.docker.com/linux/debian $(lsb_release -cs) stable' > /etc/apt/sources.list.d/docker.list"
 		fi
 	else
-		sudo su -c "echo 'deb [arch=$arch_system] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' > $repo/docker.list"
+		sudo su -c "echo 'deb [arch=$arch_system] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' > /etc/apt/sources.list.d/docker.list"
 	fi
 	
 	# instalacion de Docker 

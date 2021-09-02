@@ -9,6 +9,7 @@
 #
 # 2021-09-01: Agregado instalacion de Postgres directo en el servidor para uso de tablas
 #             particionadas y mejora de performance.
+# NOTA: Desde esta version se soporta multiarquitectura
 #
 
 #Verifico si Psql de postgres esta instalado
@@ -27,6 +28,9 @@ fi
 
 # instalo librerias del sistema operativo y python requeridas
 # por los scripts complemetarios
+
+# Verifico la arquitectura a usarse
+arch_system=$(dpkg --print-architecture)
 
 #Verifico si Docker esta instalado
 sudo docker --version
@@ -52,10 +56,10 @@ else
 			echo "Distribucion de Linux no soportada"
 			exit 1
 		else
-			sudo su -c "echo 'deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable' > $repo/docker.list"
+			sudo su -c "echo 'deb [arch=$arch_system] https://download.docker.com/linux/debian $(lsb_release -cs) stable' > $repo/docker.list"
 		fi
 	else
-		sudo su -c "echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' > $repo/docker.list"
+		sudo su -c "echo 'deb [arch=$arch_system] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' > $repo/docker.list"
 	fi
 	
 	# instalacion de Docker 

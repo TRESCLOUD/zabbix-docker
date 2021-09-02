@@ -65,6 +65,10 @@ else
 	# instalacion de Docker 
 	sudo apt-get update && sudo apt-get install -y docker-ce
 	
+	#Instalo Docker compose
+	sudo pip3 install pip3
+	sudo pip3 install docker-compose
+	
     #Permisos de Docker
     sudo usermod -a -G docker $USER
 fi

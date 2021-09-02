@@ -28,6 +28,46 @@ fi
 # instalo librerias del sistema operativo y python requeridas
 # por los scripts complemetarios
 
+#Verifico si Docker esta instalado
+sudo docker --version
+result=$?
+if [ "${result}" -eq "0" ] ; then
+    echo "`date`: Ya esta instalado Docker"
+else
+    echo "`date`: instalando Docker ..."
+	#Llave publica Docker
+	#sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	wget https://download.docker.com/linux/ubuntu/gpg
+	sudo apt-key add gpg
+	rm gpg
+	
+	# Verifico si es ubuntu o debian la distribucion
+	check_ubuntu=$(cat /etc/issue | grep Ubuntu)
+	check_debian=$(cat /etc/issue | grep Debian)
+	
+	if [[ -z $check_ubuntu ]]
+	then
+		if [[ -z $check_debian ]]
+		then
+			echo "Distribucion de Linux no soportada"
+			exit 1
+		else
+			sudo su -c "echo 'deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable' > $repo/docker.list"
+		fi
+	else
+		sudo su -c "echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' > $repo/docker.list"
+	fi
+	
+	# instalacion de Docker 
+	sudo apt-get update && sudo apt-get install -y docker-ce
+	
+    #Permisos de Docker
+    sudo usermod -a -G docker $USER
+fi
+
+# instalo librerias del sistema operativo y python requeridas
+# por los scripts complemetarios
+
 sudo apt install python3-pip -y
 pip3 install docker
 

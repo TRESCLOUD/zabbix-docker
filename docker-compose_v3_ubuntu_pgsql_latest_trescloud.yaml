@@ -3,7 +3,8 @@ services:
  zabbix-server:
   image: zabbix-server-pgsql:ubuntu-5.2-latest-trescloud
   environment:
-    - ZBX_CACHESIZE=64M
+    # Aumentamos el cache de zabbix, se usaba 64M
+    - ZBX_CACHESIZE=128M
     # Cambiamos el numero de pollers de servidores, pasamos de 7 a 10
     - ZBX_STARTPOLLERS=20
     # Cambiamos el timeout a 10 para lograr conexion a los servidores OD que demoran su entrega de los datos
